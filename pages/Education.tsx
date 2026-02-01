@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { EDUCATION_MODULES } from '../constants';
 import { NeoCard } from '../components/ui/NeoCard';
 import { NeoButton } from '../components/ui/NeoButton';
+import { NeoModal } from '../components/ui/NeoModal';
 import { PlayCircle, CheckCircle } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import { EducationModule } from '../types';
 
 export const Education: React.FC = () => {
   const [flippedCard, setFlippedCard] = useState<number | null>(null);
+  const [selectedModule, setSelectedModule] = useState<EducationModule | null>(null);
 
   const myths = [
     { q: "Myth: Climate change is just a natural cycle.", a: "Fact: While Earth has cycles, the current warming rate is unprecedented and 100% driven by human greenhouse gas emissions." },
@@ -34,7 +38,12 @@ export const Education: React.FC = () => {
                 <h4 className="text-xl font-bold mb-2">{mod.title}</h4>
                 <p className="text-sm text-gray-600 mb-4">{mod.description}</p>
               </div>
-              <NeoButton size="sm" variant={mod.completed ? 'outline' : 'secondary'} className="w-full">
+              <NeoButton 
+                size="sm" 
+                variant={mod.completed ? 'outline' : 'secondary'} 
+                className="w-full"
+                onClick={() => setSelectedModule(mod)}
+              >
                 {mod.completed ? 'Review' : 'Start (+' + mod.readTime + ')'} <PlayCircle size={16} />
               </NeoButton>
             </NeoCard>
@@ -71,6 +80,25 @@ export const Education: React.FC = () => {
           ))}
         </div>
       </section>
+
+      {/* Learning Modal */}
+      <NeoModal
+        isOpen={!!selectedModule}
+        onClose={() => setSelectedModule(null)}
+        title={selectedModule?.title || ''}
+      >
+        {selectedModule && (
+          <div className="prose prose-lg prose-p:my-2 prose-h2:text-xl prose-h2:font-bold prose-h2:mt-4">
+            <ReactMarkdown>{selectedModule.content}</ReactMarkdown>
+            
+            <div className="mt-8 text-center">
+              <NeoButton onClick={() => setSelectedModule(null)} variant="primary" size="lg">
+                Mark as Complete (+50 XP)
+              </NeoButton>
+            </div>
+          </div>
+        )}
+      </NeoModal>
     </div>
   );
 };
