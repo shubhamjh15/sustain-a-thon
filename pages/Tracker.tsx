@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NeoCard } from '../components/ui/NeoCard';
 import { NeoButton } from '../components/ui/NeoButton';
+import { NeoModal } from '../components/ui/NeoModal';
+import { ImpactChart } from '../components/ImpactChart';
 import { UserStats, ActionLog } from '../types';
-import { Flame, Trophy, Share2 } from 'lucide-react';
+import { Flame, Trophy, Share2, PlusCircle } from 'lucide-react';
 
 interface TrackerProps {
   stats: UserStats;
@@ -11,6 +13,8 @@ interface TrackerProps {
 }
 
 export const Tracker: React.FC<TrackerProps> = ({ stats, logs, onLogAction }) => {
+  const [showCustomModal, setShowCustomModal] = useState(false);
+  const [customAction, setCustomAction] = useState({ name: '', co2: '1.0' });
   
   // Progress within the current level (0-999)
   const currentLevelProgress = stats.xp % 1000;
@@ -25,8 +29,15 @@ export const Tracker: React.FC<TrackerProps> = ({ stats, logs, onLogAction }) =>
         url: window.location.href
       }).catch(console.error);
     } else {
-      // Fallback for demo
       alert(`Share this to your socials:\n\n"${text}"`);
+    }
+  };
+
+  const submitCustomAction = () => {
+    if (customAction.name) {
+      onLogAction(customAction.name, 50, parseFloat(customAction.co2), '✨');
+      setShowCustomModal(false);
+      setCustomAction({ name: '', co2: '1.0' });
     }
   };
 
@@ -64,7 +75,13 @@ export const Tracker: React.FC<TrackerProps> = ({ stats, logs, onLogAction }) =>
       <div className="grid md:grid-cols-3 gap-8">
         {/* Quick Actions */}
         <div className="md:col-span-2 space-y-6">
-          <h2 className="text-3xl font-bold">Log Action</h2>
+          <div className="flex justify-between items-center">
+             <h2 className="text-3xl font-bold">Log Action</h2>
+             <NeoButton size="sm" onClick={() => setShowCustomModal(true)}>
+               <PlusCircle size={16} /> Custom
+             </NeoButton>
+          </div>
+          
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {[
               { name: 'Recycled', xp: 50, co2: 0.5, icon: '♻️', color: 'bg-green-200' },
@@ -86,23 +103,34 @@ export const Tracker: React.FC<TrackerProps> = ({ stats, logs, onLogAction }) =>
             ))}
           </div>
 
-          <h2 className="text-3xl font-bold pt-4">Recent History</h2>
-          <div className="space-y-4">
-            {logs.map((log) => (
-              <div key={log.id} className="bg-white border-2 border-neo-black p-4 rounded-lg flex justify-between items-center shadow-neo-sm animate-fade-in">
-                <div className="flex items-center gap-4">
-                  <span className="text-2xl bg-gray-100 p-2 rounded-lg border border-black">{log.icon}</span>
-                  <div>
-                    <div className="font-bold">{log.type}</div>
-                    <div className="text-sm text-gray-500">{log.date}</div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+               <h2 className="text-3xl font-bold pt-4 mb-4">Your Impact</h2>
+               <NeoCard className="h-80 flex items-center justify-center">
+                  <ImpactChart logs={logs} />
+               </NeoCard>
+            </div>
+            <div>
+              <h2 className="text-3xl font-bold pt-4 mb-4">Recent History</h2>
+              <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
+                {logs.length === 0 && <div className="text-gray-500 italic">No actions logged yet. Start now!</div>}
+                {logs.map((log) => (
+                  <div key={log.id} className="bg-white border-2 border-neo-black p-4 rounded-lg flex justify-between items-center shadow-neo-sm animate-fade-in">
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl bg-gray-100 p-2 rounded-lg border border-black">{log.icon}</span>
+                      <div>
+                        <div className="font-bold">{log.type}</div>
+                        <div className="text-sm text-gray-500">{log.date}</div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-bold text-neo-green">+{log.xpReward} XP</div>
+                      <div className="text-xs font-medium">Saved {log.co2Impact}kg</div>
+                    </div>
                   </div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-neo-green">+{log.xpReward} XP</div>
-                  <div className="text-xs font-medium">Saved {log.co2Impact}kg CO₂</div>
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
 
@@ -156,6 +184,37 @@ export const Tracker: React.FC<TrackerProps> = ({ stats, logs, onLogAction }) =>
           </NeoCard>
         </div>
       </div>
+
+      {/* Custom Action Modal */}
+      <NeoModal
+        isOpen={showCustomModal}
+        onClose={() => setShowCustomModal(false)}
+        title="Log Custom Action"
+      >
+        <div className="space-y-4">
+           <div>
+             <label className="block font-bold mb-2">Activity Name</label>
+             <input 
+               className="w-full border-2 border-black rounded p-2"
+               placeholder="e.g. Planted a garden"
+               value={customAction.name}
+               onChange={(e) => setCustomAction({...customAction, name: e.target.value})} 
+             />
+           </div>
+           <div>
+             <label className="block font-bold mb-2">Est. CO2 Saved (kg)</label>
+             <input 
+               type="number"
+               className="w-full border-2 border-black rounded p-2"
+               value={customAction.co2}
+               onChange={(e) => setCustomAction({...customAction, co2: e.target.value})} 
+             />
+           </div>
+           <NeoButton className="w-full" onClick={submitCustomAction}>
+             Log Activity (+50 XP)
+           </NeoButton>
+        </div>
+      </NeoModal>
     </div>
   );
 };
