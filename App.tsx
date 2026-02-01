@@ -14,8 +14,39 @@ function App() {
   const [currentPage, setCurrentPage] = useState<Page>(Page.HOME);
   
   // Global State for Gamification
-  const [stats, setStats] = useState<UserStats>(INITIAL_USER_STATS);
-  const [logs, setLogs] = useState<ActionLog[]>(RECENT_LOGS);
+  const [stats, setStats] = useState<UserStats>(() => {
+    const saved = localStorage.getItem('userStats');
+    return saved ? JSON.parse(saved) : INITIAL_USER_STATS;
+  });
+  
+  const [logs, setLogs] = useState<ActionLog[]>(() => {
+    const saved = localStorage.getItem('actionLogs');
+    return saved ? JSON.parse(saved) : RECENT_LOGS;
+  });
+
+  // Persistence
+  React.useEffect(() => {
+    localStorage.setItem('userStats', JSON.stringify(stats));
+    localStorage.setItem('actionLogs', JSON.stringify(logs));
+  }, [stats, logs]);
+
+  const checkUnlocks = (currentStats: UserStats) => {
+    const newBadges = [...currentStats.badges];
+    let unlocked = false;
+
+    if (currentStats.co2Saved >= 10 && !newBadges.includes('10kg Club')) {
+      newBadges.push('10kg Club');
+      unlocked = true;
+      alert("🎉 BADGE UNLOCKED: 10kg Club!");
+    }
+    if (currentStats.level >= 10 && !newBadges.includes('Eco Master')) {
+      newBadges.push('Eco Master');
+      unlocked = true;
+      alert("🎉 BADGE UNLOCKED: Eco Master!");
+    }
+
+    return unlocked ? newBadges : null;
+  };
 
   // Centralized XP and Action Logging Logic
   const handleLogAction = (actionName: string, xp: number, co2: number, icon: string) => {
@@ -24,34 +55,33 @@ function App() {
       type: actionName,
       co2Impact: co2,
       xpReward: xp,
-      date: 'Just now',
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
       icon
     };
     
     setLogs([newLog, ...logs]);
     
-    // Calculate new level based on 1000 XP per level
-    const newXp = stats.xp + xp;
-    const newLevel = Math.floor(newXp / 1000) + 1;
-    const newCo2 = stats.co2Saved + co2;
+    setStats(prev => {
+      const newXp = prev.xp + xp;
+      const newLevel = Math.floor(newXp / 1000) + 1;
+      const newCo2 = prev.co2Saved + co2;
+      
+      const tempStats = { ...prev, xp: newXp, level: newLevel, co2Saved: newCo2 };
+      const newBadges = checkUnlocks(tempStats);
 
-    setStats(prev => ({
-      ...prev,
-      xp: newXp,
-      level: newLevel,
-      co2Saved: newCo2
-    }));
+      return {
+        ...tempStats,
+        badges: newBadges || prev.badges
+      };
+    });
   };
 
   const handleAddXpOnly = (xp: number) => {
-    const newXp = stats.xp + xp;
-    const newLevel = Math.floor(newXp / 1000) + 1;
-    
-    setStats(prev => ({
-      ...prev,
-      xp: newXp,
-      level: newLevel
-    }));
+    setStats(prev => {
+      const newXp = prev.xp + xp;
+      const newLevel = Math.floor(newXp / 1000) + 1;
+      return { ...prev, xp: newXp, level: newLevel };
+    });
   };
 
   const renderPage = () => {
