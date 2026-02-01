@@ -22,8 +22,78 @@ export const MISSIONS: Mission[] = [
 ];
 
 export const EDUCATION_MODULES: EducationModule[] = [
-  { id: 'e1', title: 'The Greenhouse Effect', description: 'Understand how gases trap heat.', readTime: '3 min', category: 'Climate', completed: true },
-  { id: 'e2', title: 'Ocean Acidification', description: 'Why our oceans are changing pH.', readTime: '5 min', category: 'Climate', completed: false },
-  { id: 'e3', title: 'Recycling 101', description: 'What actually happens to your plastic?', readTime: '4 min', category: 'Waste', completed: false },
-  { id: 'e4', title: 'Renewable Energy', description: 'Solar, Wind, and Hydro explained.', readTime: '6 min', category: 'Energy', completed: false },
+  {
+    id: 'e1',
+    title: 'The Greenhouse Effect',
+    description: 'Understand how gases trap heat.',
+    readTime: '3 min',
+    category: 'Climate',
+    completed: true,
+    content: `
+      **What is it?**
+      Imagine Earth wrapped in a blanket. Sunlight hits the Earth, warms it up, and then that heat tries to escape back into space. Greenhouse gases (like CO2 and Methane) act like that blanket, trapping some of the heat to keep the planet warm enough for life.
+
+      **The Problem:**
+      We are making the blanket too thick! Burning fossil fuels adds massive amounts of CO2, trapping too much heat. This leads to global warming, melting ice caps, and extreme weather.
+
+      **Key Takeaway:**
+      It's not that the greenhouse effect is "bad" (we need it to survive!), but we are supercharging it way beyond natural levels.
+    `
+  },
+  {
+    id: 'e2',
+    title: 'Ocean Acidification',
+    description: 'Why our oceans are changing pH.',
+    readTime: '5 min',
+    category: 'Climate',
+    completed: false,
+    content: `
+      **The Evil Twin of Climate Change**
+      While global warming gets all the attention, ocean acidification is just as scary. The ocean absorbs about 30% of the CO2 we release.
+
+      **The Chemistry:**
+      When CO2 dissolves in seawater, it forms carbonic acid. This lowers the pH of the ocean, making it more acidic.
+
+      **Why it matters:**
+      Shellfish, coral, and plankton rely on carbonate ions to build their shells/skeletons. Acidic water steals these ions, causing shells to dissolve or become weak. This threatens the entire marine food web!
+    `
+  },
+  {
+    id: 'e3',
+    title: 'Recycling 101',
+    description: 'What actually happens to your plastic?',
+    readTime: '4 min',
+    category: 'Waste',
+    completed: false,
+    content: `
+      **The Hard Truth**
+      Only about 9% of plastic ever produced has been recycled. Most ends up in landfills or the ocean.
+
+      **Wish-cycling:**
+      This is when you throw something in the bin *hoping* it's recyclable (like a greasy pizza box). This actually contaminates the whole batch!
+
+      **Rule of Thumb:**
+      1. **Reduce** first (buy less).
+      2. **Reuse** second (jars, bags).
+      3. **Recycle** last (and make sure it's clean and actually recyclable in your area).
+    `
+  },
+  {
+    id: 'e4',
+    title: 'Renewable Energy',
+    description: 'Solar, Wind, and Hydro explained.',
+    readTime: '6 min',
+    category: 'Energy',
+    completed: false,
+    content: `
+      **Solar Power ☀️**
+      Photovoltaic cells convert sunlight directly into electricity. Costs have dropped 89% in the last decade!
+
+      **Wind Power 🌬️**
+      Turbines capture kinetic energy from wind. One rotation can power a home for a day.
+
+      **The Grid Challenge:**
+      The sun doesn't always shine, and wind doesn't always blow. That's why we need better **battery storage** and a "smart grid" to balance supply and demand efficiently.
+    `
+  },
 ];

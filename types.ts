@@ -48,4 +48,5 @@ export interface EducationModule {
   readTime: string;
   category: 'Climate' | 'Waste' | 'Energy';
   completed: boolean;
+  content: string;
 }
