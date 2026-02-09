@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Home } from './pages/Home';
 import { Dashboard } from './pages/Dashboard';
@@ -7,11 +7,22 @@ import { Education } from './pages/Education';
 import { Community } from './pages/Community';
 import { AiAssistant } from './pages/AiAssistant';
 import { Missions } from './pages/Missions';
+import { Loader } from './components/ui/Loader';
 import { Page, UserStats, ActionLog } from './types';
 import { INITIAL_USER_STATS, RECENT_LOGS } from './constants';
+import { AnimatePresence } from 'framer-motion';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>(Page.HOME);
+  const [loading, setLoading] = useState(true);
+
+  // Loader Logic
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2500); // Show loader for 2.5 seconds
+    return () => clearTimeout(timer);
+  }, []);
   
   // Global State for Gamification
   const [stats, setStats] = useState<UserStats>(() => {
@@ -99,10 +110,18 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#f0fdf4] text-neo-black selection:bg-neo-pink selection:text-white pb-8">
-      <Navbar currentPage={currentPage} setPage={setCurrentPage} />
-      <main className="max-w-7xl mx-auto px-4 md:px-6">
-        {renderPage()}
-      </main>
+      <AnimatePresence>
+        {loading && <Loader />}
+      </AnimatePresence>
+
+      {!loading && (
+        <>
+          <Navbar currentPage={currentPage} setPage={setCurrentPage} />
+          <main className="max-w-7xl mx-auto px-4 md:px-6">
+            {renderPage()}
+          </main>
+        </>
+      )}
     </div>
   );
 }
