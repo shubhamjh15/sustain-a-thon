@@ -48,16 +48,24 @@ function App() {
     if (currentStats.co2Saved >= 10 && !newBadges.includes('10kg Club')) {
       newBadges.push('10kg Club');
       unlocked = true;
-      alert("🎉 BADGE UNLOCKED: 10kg Club!");
     }
     if (currentStats.level >= 10 && !newBadges.includes('Eco Master')) {
       newBadges.push('Eco Master');
       unlocked = true;
-      alert("🎉 BADGE UNLOCKED: Eco Master!");
     }
 
     return unlocked ? newBadges : null;
   };
+
+  // Badge Unlock Notification Effect
+  const prevBadgesRef = React.useRef(stats.badges);
+  useEffect(() => {
+    const newBadges = stats.badges.filter(b => !prevBadgesRef.current.includes(b));
+    newBadges.forEach(badge => {
+      alert(`🎉 BADGE UNLOCKED: ${badge}!`);
+    });
+    prevBadgesRef.current = stats.badges;
+  }, [stats.badges]);
 
   // Centralized XP and Action Logging Logic
   const handleLogAction = (actionName: string, xp: number, co2: number, icon: string) => {
@@ -70,7 +78,7 @@ function App() {
       icon
     };
     
-    setLogs([newLog, ...logs]);
+    setLogs(prevLogs => [newLog, ...prevLogs]);
     
     setStats(prev => {
       const newXp = prev.xp + xp;
